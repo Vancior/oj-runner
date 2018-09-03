@@ -4,37 +4,54 @@
 #include <stdio.h>
 #include "extconf.h"
 #include "oj_runner.h"
+#include "oj_runner.h"
 
-static VALUE run(VALUE self, VALUE args)
+int init_run(struct Runobj *runobj, VALUE args)
+{
+    VALUE cmd_array, fd_obj, time_obj, memory_obj, uid_obj, trace_obj, calls_obj;
+    Check_Type(args, T_HASH);
+
+    if ((cmd_array = rb_hash_aref(args, rb_str_new2("cmd"))) == Qnil)
+        rb_raise(rb_eRuntimeError, "key 'cmd' required");
+    else
+    {
+        Check_Type(cmd_array, T_ARRAY);
+        if (!array2cmd(cmd_array, runobj->cmd))
+            return 0;
+        printf("%s\n", runobj->cmd);
+    }
+
+    if ((fd_obj = rb_hash_aref(args, rb_str_new2("fd_in"))) == Qnil)
+        runobj->fd_in = -1;
+    else
+        runobj->fd_in = FIX2INT(fd_obj);
+    if ((fd_obj = rb_hash_aref(args, rb_str_new2("fd_out"))) == Qnil)
+        runobj->fd_out = -1;
+    else
+        runobj->fd_out = FIX2INT(fd_obj);
+    if ((fd_obj = rb_hash_aref(args, rb_str_new2("fd_err"))) == Qnil)
+        runobj->fd_err = -1;
+    else
+        runobj->fd_err = FIX2INT(fd_obj);
+    
+    if ((time_obj = rb_hash_aref(args, rb_str_new2("timelimit"))) == Qnil)
+        rb_raise(rb_eRuntimeError, "key 'timelimit' required");
+    else
+        runobj->time_limit = FIX2INT(time_obj);
+    
+    if ((memory_obj = rb_hash_aref(args, rb_str_new2("memorylimit"))) == Qnil)
+        rb_raise(rb_eRuntimeError, "key 'memorylimit' required");
+    else
+        runobj->memory_limit = FIX2INT(memory_obj);
+    
+    return 1;
+}
+
+VALUE run(VALUE self, VALUE args)
 {
     struct Runobj runobj = {0};
     struct Result result = {0};
-    VALUE cmd, one_cmd;
-    char cmd_combined[255] = "", *cmd_temp;
-    long cmd_len = 0, i = 0, cmd_total_len = 0;
-    Check_Type(args, T_HASH);
-    cmd = rb_hash_aref(args, rb_str_new2("cmd"));
-    if (cmd == Qnil)
-        rb_raise(rb_eRuntimeError, "key 'cmd' has to be set");
-    else
-    {
-        Check_Type(cmd, T_ARRAY);
-        while (rb_ary_entry(cmd, cmd_len) != Qnil)
-            ++cmd_len;
-        // cmd_cptr = malloc(sizeof(char *) * cmd_len);
-        for (i = 0; i < cmd_len; ++i)
-        {
-            one_cmd = rb_ary_entry(cmd, i);
-            SafeStringValue(one_cmd);
-            cmd_temp = StringValueCStr(one_cmd);
-            if (strlen(cmd_temp) + cmd_total_len + 1 >= 255)
-                rb_raise(rb_eRuntimeError, "cmd too long");
-            cmd_total_len += strlen(cmd_temp) + 1;
-            strcat(cmd_combined, cmd_temp);
-            strcat(cmd_combined, " ");
-        }
-        return rb_str_new2(cmd_combined);
-    }
+    init_run(&runobj, args);
     return Qtrue;
 }
 

@@ -1,3 +1,5 @@
+#ifndef __OJ_RUNNER_H
+#define __OJ_RUNNER_H
 
 enum JUDGE_RESULT
 {
@@ -24,10 +26,12 @@ struct Result
 
 struct Runobj
 {
-    char *const *args;
+    char cmd[255];
 
     int fd_in, fd_out, fd_err;
     int time_limit, memory_limit;
     int runner;
     int trace;
 };
+
+#endif
