@@ -1,6 +1,12 @@
 #ifndef __OJ_RUNNER_H
 #define __OJ_RUNNER_H
 
+#define CALLS_MAX 400
+#define MAX_OUTPUT 100000000
+
+#include <ruby.h>
+#include <sys/types.h>
+
 enum JUDGE_RESULT
 {
     AC = 0,
@@ -26,11 +32,13 @@ struct Result
 
 struct Runobj
 {
-    char cmd[255];
+    char *const *cmd;
+    u_char call_table[CALLS_MAX];
+    VALUE files;
 
     int fd_in, fd_out, fd_err;
     int time_limit, memory_limit;
-    int runner;
+    int uid;
     int trace;
 };
 

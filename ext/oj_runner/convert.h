@@ -1,8 +1,9 @@
 #ifndef __OJ_CONVERT_H
 #define __OJ_CONVERT_H
 
-#include <ruby.h>
+#include "oj_runner.h"
 
-int array2cmd(VALUE array, char *buffer);
+char *const * array2cmd(VALUE);
+int array2calls(VALUE, u_char[]);
 
 #endif

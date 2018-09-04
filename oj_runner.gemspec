@@ -11,7 +11,7 @@ Gem::Specification.new do |s|
     s.files = Dir.glob('lib/**/*.rb') + Dir.glob('ext/**/*.{c,h}')
     # s.require_paths = ['lib']
 
-    s.add_development_dependency 'rspec', '>= 2.13.0'
-    s.add_development_dependency 'rake', '>= 1.9.1'
-    s.add_development_dependency 'rake-compiler', '>= 0.8.3'
+    s.add_development_dependency 'rspec', '~> 2.13'
+    s.add_development_dependency 'rake', '~> 1.9'
+    s.add_development_dependency 'rake-compiler', '~> 0.8'
 end
